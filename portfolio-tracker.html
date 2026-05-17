@@ -6,571 +6,441 @@
 <title>投资组合收益监控</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0e14;
-    --surface: #111720;
-    --surface2: #1a2232;
-    --border: #1e2d44;
-    --border2: #253650;
-    --text: #cdd6f4;
-    --muted: #6b7fa3;
-    --accent: #4fc3f7;
-    --green: #a6da95;
-    --green-dim: #1e3a2a;
-    --red: #f38ba8;
-    --red-dim: #3a1e2a;
-    --amber: #f9e2af;
-    --amber-dim: #3a2e1e;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
+:root{
+  --bg:#0a0e14;--surface:#111720;--surface2:#1a2232;
+  --border:#1e2d44;--border2:#253650;
+  --text:#cdd6f4;--muted:#6b7fa3;--accent:#4fc3f7;
+  --green:#a6da95;--gdim:#1e3a2a;
+  --red:#f38ba8;  --rdim:#3a1e2a;
+  --amber:#f9e2af;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);
+     min-height:100vh;padding:24px 16px 60px}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* Header */
+.hdr{max-width:1100px;margin:0 auto 24px;display:flex;
+     align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;
+     border-bottom:1px solid var(--border);padding-bottom:18px}
+.logo{display:flex;align-items:center;gap:10px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);
+     box-shadow:0 0 10px var(--accent);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+h1{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--accent);letter-spacing:.04em}
+.sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    padding: 24px 16px 60px;
-  }
+/* Topbar */
+.topbar{max-width:1100px;margin:0 auto 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mono);font-size:12px;font-weight:500;padding:9px 18px;
+     border-radius:6px;border:1px solid var(--border2);cursor:pointer;transition:all .18s;
+     display:flex;align-items:center;gap:7px;white-space:nowrap}
+.btn-p{background:var(--accent);color:#000;border-color:var(--accent)}
+.btn-p:hover{background:#81d4fa}
+.btn-p:disabled{opacity:.5;cursor:not-allowed}
+.sbar{font-family:var(--mono);font-size:11px;color:var(--muted);
+      margin-left:auto;display:flex;align-items:center;gap:6px}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.sdot.loading{background:var(--amber);animation:pulse .8s ease-in-out infinite}
+.sdot.ok{background:var(--green)}.sdot.err{background:var(--red)}
 
-  /* ─── Header ───────────────────────────────────── */
-  .header {
-    max-width: 1100px;
-    margin: 0 auto 28px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 18px;
-  }
-  .logo { display: flex; align-items: center; gap: 10px; }
-  .logo-dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
-    animation: pulse 2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50% { opacity: .5; transform: scale(1.3); }
-  }
-  h1 { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: .04em; }
-  .subtitle { font-size: 11px; color: var(--muted); margin-top: 3px; font-family: var(--mono); }
+/* AUD bar */
+.audbar{max-width:1100px;margin:0 auto 16px;
+        background:var(--surface);border:1px solid var(--border);border-radius:8px;
+        padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.audbar label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.aud-in{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;
+        color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:600;
+        padding:4px 8px;width:82px;text-align:right}
+.aud-in:focus{outline:none;border-color:var(--accent)}
+.audhint{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.aud-fetch{font-family:var(--mono);font-size:10px;color:var(--accent);
+           cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
 
-  /* ─── Top bar ───────────────────────────────────── */
-  .topbar {
-    max-width: 1100px;
-    margin: 0 auto 20px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .btn {
-    font-family: var(--mono);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: 1px solid var(--border2);
-    cursor: pointer;
-    transition: all .18s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    white-space: nowrap;
-  }
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { background: #81d4fa; }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-  .btn-ghost {
-    background: transparent;
-    color: var(--text);
-  }
-  .btn-ghost:hover { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+/* KPI */
+.kpi-row{max-width:1100px;margin:0 auto 22px;
+         display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+.kpi-l{font-size:10px;color:var(--muted);font-family:var(--mono);
+        letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.kpi-v{font-family:var(--mono);font-size:20px;font-weight:600}
 
-  .status-bar {
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .status-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--muted);
-  }
-  .status-dot.loading { background: var(--amber); animation: pulse .8s ease-in-out infinite; }
-  .status-dot.ok { background: var(--green); }
-  .status-dot.error { background: var(--red); }
+/* Table */
+.twrap{max-width:1100px;margin:0 auto;overflow-x:auto;
+       border-radius:12px;border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+thead{background:var(--surface2)}
+th{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--muted);
+   letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;
+   text-align:right;white-space:nowrap;border-bottom:1px solid var(--border)}
+th.L{text-align:left}
+tr{transition:background .12s}
+tbody tr:hover{background:var(--surface2)}
+td{padding:13px 14px;border-bottom:1px solid var(--border);
+   text-align:right;font-family:var(--mono);font-size:13px;vertical-align:middle}
+td.L{text-align:left}
+td.nm{text-align:left;font-family:var(--sans);font-size:12px;color:var(--muted)}
+tbody tr:last-child td{border-bottom:none}
 
-  /* ─── KPI summary ───────────────────────────────── */
-  .kpi-row {
-    max-width: 1100px;
-    margin: 0 auto 22px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 10px;
-  }
-  .kpi {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 16px;
-  }
-  .kpi-label { font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
-  .kpi-value { font-family: var(--mono); font-size: 20px; font-weight: 600; }
+.ticker{font-family:var(--mono);font-size:13px;font-weight:600;
+        color:var(--accent);letter-spacing:.03em}
+.badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;
+       margin-left:5px;font-family:var(--mono);vertical-align:middle}
+.asx{background:#1e3a5f;color:#4fc3f7}
+.us{background:#2a1e3a;color:#cba6f7}
 
-  /* ─── Table ─────────────────────────────────────── */
-  .table-wrap {
-    max-width: 1100px;
-    margin: 0 auto;
-    overflow-x: auto;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    min-width: 820px;
-  }
-  thead { background: var(--surface2); }
-  th {
-    font-family: var(--mono);
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    padding: 11px 14px;
-    text-align: right;
-    white-space: nowrap;
-    border-bottom: 1px solid var(--border);
-  }
-  th:first-child, th:nth-child(2) { text-align: left; }
-  tr { transition: background .12s; }
-  tbody tr:hover { background: var(--surface2); }
-  td {
-    padding: 13px 14px;
-    border-bottom: 1px solid var(--border);
-    text-align: right;
-    font-family: var(--mono);
-    font-size: 13px;
-    vertical-align: middle;
-  }
-  td:first-child { text-align: left; }
-  td:nth-child(2) {
-    text-align: left;
-    font-family: var(--sans);
-    font-size: 12px;
-    color: var(--muted);
-    max-width: 160px;
-  }
-  tbody tr:last-child td { border-bottom: none; }
+.gain{color:var(--green)}.loss{color:var(--red)}.neu{color:var(--muted)}
+.cp-loading{color:var(--muted);font-size:11px}
+.cp-err{color:var(--red);font-size:11px}
 
-  .ticker {
-    font-family: var(--mono);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: .03em;
-  }
-  .exchange-badge {
-    display: inline-block;
-    font-size: 9px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    margin-left: 5px;
-    font-family: var(--mono);
-    vertical-align: middle;
-  }
-  .asx { background: #1e3a5f; color: #4fc3f7; }
-  .us  { background: #2a1e3a; color: #cba6f7; }
+.pbadge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500}
+.pg{background:var(--gdim);color:var(--green)}
+.pl{background:var(--rdim);color:var(--red)}
+.pn{background:var(--surface2);color:var(--muted)}
 
-  /* editable buy price */
-  .price-input {
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    text-align: right;
-    width: 90px;
-    padding: 2px 4px;
-    transition: border-color .15s;
-  }
-  .price-input:hover { border-color: var(--border2); }
-  .price-input:focus { outline: none; border-color: var(--accent); background: var(--surface2); }
+/* Error panel */
+.epanel{max-width:1100px;margin:12px auto 0;
+        background:#1a0e12;border:1px solid var(--rdim);border-radius:8px;
+        padding:12px 16px;font-family:var(--mono);font-size:11px;
+        color:var(--red);display:none;line-height:1.8}
+.epanel.show{display:block}
+.epanel h4{color:var(--amber);margin-bottom:6px}
 
-  .current-price { font-weight: 500; }
-  .current-price.loading { color: var(--muted); }
-  .current-price.error { color: var(--red); font-size: 11px; }
+/* Footer */
+.footer{max-width:1100px;margin:22px auto 0;font-size:11px;color:var(--muted);
+        font-family:var(--mono);line-height:1.8;
+        border-top:1px solid var(--border);padding-top:14px}
+.footer a{color:var(--accent);text-decoration:none}
 
-  .gain { color: var(--green); }
-  .loss { color: var(--red); }
-  .neutral { color: var(--muted); }
-
-  .pct-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .pct-gain { background: var(--green-dim); color: var(--green); }
-  .pct-loss { background: var(--red-dim); color: var(--red); }
-  .pct-neutral { background: var(--surface2); color: var(--muted); }
-
-  /* ─── Footer ────────────────────────────────────── */
-  .footer {
-    max-width: 1100px;
-    margin: 24px auto 0;
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-    line-height: 1.7;
-    border-top: 1px solid var(--border);
-    padding-top: 14px;
-  }
-
-  /* ─── Modal (edit instructions) ─────────────────── */
-  .toast {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: var(--surface2);
-    border: 1px solid var(--border2);
-    border-radius: 8px;
-    padding: 12px 18px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--text);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all .25s;
-    pointer-events: none;
-    z-index: 99;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-
-  @media (max-width: 600px) {
-    h1 { font-size: 15px; }
-    .kpi-value { font-size: 16px; }
-  }
+/* Toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);
+       border:1px solid var(--border2);border-radius:8px;padding:12px 18px;
+       font-family:var(--mono);font-size:12px;color:var(--text);
+       opacity:0;transform:translateY(10px);transition:all .25s;
+       pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateY(0)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin .7s linear infinite}
 </style>
 </head>
 <body>
 
-<div class="header">
+<div class="hdr">
   <div>
-    <div class="logo">
-      <div class="logo-dot"></div>
-      <h1>PORTFOLIO MONITOR</h1>
-    </div>
-    <div class="subtitle">投资组合收益实时追踪 · 买入价格可点击编辑</div>
+    <div class="logo"><div class="dot"></div><h1>PORTFOLIO MONITOR</h1></div>
+    <div class="sub">投资组合收益追踪 · 全部折算 AUD 计价 · 基准日 2026-05-17</div>
   </div>
   <div style="text-align:right">
-    <div style="font-family:var(--mono);font-size:11px;color:var(--muted)" id="last-updated">尚未获取价格</div>
-    <div style="font-family:var(--mono);font-size:10px;color:#444;margin-top:3px">基准日期：2026-05-17</div>
+    <div id="last-upd" style="font-family:var(--mono);font-size:11px;color:var(--muted)">尚未获取价格</div>
+    <div style="font-family:var(--mono);font-size:10px;color:#444;margin-top:3px">买入日：2026-05-17（周六按周五收盘价）</div>
   </div>
 </div>
 
-<!-- Top bar -->
 <div class="topbar">
-  <button class="btn btn-primary" id="refresh-btn" onclick="fetchAllPrices()">
-    <span id="btn-icon">⟳</span> 获取当前价格
+  <button class="btn btn-p" id="rbtn" onclick="fetchAll()">
+    <span id="bicon">⟳</span> 获取当前价格
   </button>
-  <button class="btn btn-ghost" onclick="saveToLocal()">💾 保存修改</button>
-  <button class="btn btn-ghost" onclick="resetPrices()">↩ 恢复默认买入价</button>
-  <div class="status-bar">
-    <div class="status-dot" id="status-dot"></div>
-    <span id="status-text">点击「获取当前价格」刷新</span>
+  <div class="sbar">
+    <div class="sdot" id="sdot"></div>
+    <span id="stxt">点击按钮获取最新报价</span>
   </div>
 </div>
 
-<!-- KPI summary -->
+<div class="audbar">
+  <label>🇦🇺 AUD/USD 汇率（USD股票折算用）：</label>
+  <input class="aud-in" type="number" id="audrate" step="0.0001"
+         onchange="saveRate(); renderTable()" title="输入当前 AUD/USD 汇率">
+  <button class="aud-fetch" onclick="fetchAudRate()">⟳ 自动获取汇率</button>
+  <span class="audhint">美股价格 ÷ 汇率 = AUD 等值</span>
+</div>
+
 <div class="kpi-row">
   <div class="kpi">
-    <div class="kpi-label">持仓总数</div>
-    <div class="kpi-value" id="kpi-total" style="color:var(--accent)">10</div>
+    <div class="kpi-l">持仓总数</div>
+    <div class="kpi-v" style="color:var(--accent)">10</div>
   </div>
   <div class="kpi">
-    <div class="kpi-label">盈利持仓</div>
-    <div class="kpi-value gain" id="kpi-gain">—</div>
+    <div class="kpi-l">最大涨幅</div>
+    <div class="kpi-v gain" id="kbest">—</div>
   </div>
   <div class="kpi">
-    <div class="kpi-label">亏损持仓</div>
-    <div class="kpi-value loss" id="kpi-loss">—</div>
+    <div class="kpi-l">最大跌幅</div>
+    <div class="kpi-v loss" id="kworst">—</div>
   </div>
   <div class="kpi">
-    <div class="kpi-label">最大涨幅</div>
-    <div class="kpi-value gain" id="kpi-best">—</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label">最大跌幅</div>
-    <div class="kpi-value loss" id="kpi-worst">—</div>
+    <div class="kpi-l">组合平均收益率</div>
+    <div class="kpi-v" id="kavg">—</div>
   </div>
 </div>
 
-<!-- Table -->
-<div class="table-wrap">
-  <table id="portfolio-table">
+<div class="twrap">
+  <table>
     <thead>
       <tr>
-        <th style="text-align:left">代码</th>
-        <th style="text-align:left">名称</th>
-        <th>交易所</th>
-        <th>买入价格 <span style="color:#444;font-size:9px">可点击编辑</span></th>
-        <th>当前价格</th>
-        <th>涨跌额</th>
+        <th class="L">代码</th>
+        <th class="L">名称</th>
+        <th>原币</th>
+        <th>买入价<br><span style="font-size:8px;opacity:.6">原始货币</span></th>
+        <th>当前价<br><span style="font-size:8px;opacity:.6">原始货币</span></th>
+        <th>买入价<br><span style="font-size:8px;opacity:.6">AUD</span></th>
+        <th>当前价<br><span style="font-size:8px;opacity:.6">AUD</span></th>
+        <th>涨跌额<br><span style="font-size:8px;opacity:.6">AUD</span></th>
         <th>收益率</th>
-        <th>货币</th>
       </tr>
     </thead>
-    <tbody id="table-body">
-    </tbody>
+    <tbody id="tbody"></tbody>
   </table>
 </div>
 
+<div class="epanel" id="epanel">
+  <h4>⚠️ 获取失败 — 诊断与解决方法</h4>
+  <div id="edetail"></div>
+</div>
+
 <div class="footer">
-  💡 使用说明：
-  ① 点击「获取当前价格」按钮从 Yahoo Finance 获取实时报价（需网络）
-  ② 点击「买入价格」单元格直接输入修改，按 Enter 或失焦后自动保存
-  ③ 点击「保存修改」将买入价格存入浏览器 localStorage（下次打开自动加载）
-  <br>
-  ⚠️ 由于浏览器跨域限制，价格通过 allorigins.win 代理获取 Yahoo Finance 数据，存在约15分钟延迟。PMGOLD / GOLD 为 AUD 计价；BRK.B / NVDA / MU 为 USD 计价；其余 ASX ETF 为 AUD 计价。
+  💡 说明：美股（BRK.B / NVDA / MU）原价为 USD，通过上方汇率自动折算 AUD 显示。ASX ETF 原价即 AUD，无需换算。<br>
+  ⟳ 数据来自 Yahoo Finance（通过 <a href="https://corsproxy.io" target="_blank">corsproxy.io</a> / allorigins 代理，约15分钟延迟）。<br>
+  ❓ 若全部失败：① 关闭广告拦截插件（uBlock/AdGuard）② 检查能否访问 <a href="https://finance.yahoo.com" target="_blank">finance.yahoo.com</a> ③ 等候片刻重试。
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ─── Portfolio data ─────────────────────────────────
-const DEFAULT_STOCKS = [
-  { id:'IVV',     name:'iShares S&P 500 ETF',               exchange:'ASX',   ticker:'IVV.AX',   currency:'AUD', buyPrice: 69.27 },
-  { id:'IHVV',    name:'iShares S&P 500 AUD Hedged ETF',    exchange:'ASX',   ticker:'IHVV.AX',  currency:'AUD', buyPrice: 62.67 },
-  { id:'NDQ',     name:'BetaShares NASDAQ 100 ETF',          exchange:'ASX',   ticker:'NDQ.AX',   currency:'AUD', buyPrice: 59.92 },
-  { id:'PMGOLD',  name:'Perth Mint Physical Gold',           exchange:'ASX',   ticker:'PMGOLD.AX',currency:'AUD', buyPrice: 31.80 },
-  { id:'GOLD',    name:'Global X Physical Gold',             exchange:'ASX',   ticker:'GOLD.AX',  currency:'AUD', buyPrice: 63.06 },
-  { id:'BRK.B',   name:'Berkshire Hathaway Class B',         exchange:'NYSE',  ticker:'BRK-B',    currency:'USD', buyPrice: 482.60 },
-  { id:'VDHG',    name:'Vanguard Diversified High Growth',   exchange:'ASX',   ticker:'VDHG.AX',  currency:'AUD', buyPrice: 74.34 },
-  { id:'VGS',     name:'Vanguard MSCI International ETF',    exchange:'ASX',   ticker:'VGS.AX',   currency:'AUD', buyPrice:146.72 },
-  { id:'NVDA',    name:'NVIDIA Corporation',                 exchange:'NASDAQ',ticker:'NVDA',     currency:'USD', buyPrice:131.38 },
-  { id:'MU',      name:'Micron Technology',                  exchange:'NASDAQ',ticker:'MU',       currency:'USD', buyPrice:724.66 },
+// ── Data ────────────────────────────────────────────
+const STOCKS = [
+  {id:'IVV',    name:'iShares S&P 500 ETF',              ex:'ASX',   tk:'IVV.AX',   cur:'AUD', buy:69.27},
+  {id:'IHVV',   name:'iShares S&P 500 AUD Hedged ETF',   ex:'ASX',   tk:'IHVV.AX',  cur:'AUD', buy:62.67},
+  {id:'NDQ',    name:'BetaShares NASDAQ 100 ETF',         ex:'ASX',   tk:'NDQ.AX',   cur:'AUD', buy:59.92},
+  {id:'PMGOLD', name:'Perth Mint Physical Gold',          ex:'ASX',   tk:'PMGOLD.AX',cur:'AUD', buy:31.80},
+  {id:'GOLD',   name:'Global X Physical Gold',            ex:'ASX',   tk:'GOLD.AX',  cur:'AUD', buy:63.06},
+  {id:'BRK.B',  name:'Berkshire Hathaway Class B',        ex:'NYSE',  tk:'BRK-B',    cur:'USD', buy:482.60},
+  {id:'VDHG',   name:'Vanguard Diversified High Growth',  ex:'ASX',   tk:'VDHG.AX',  cur:'AUD', buy:74.34},
+  {id:'VGS',    name:'Vanguard MSCI International ETF',   ex:'ASX',   tk:'VGS.AX',   cur:'AUD', buy:146.72},
+  {id:'NVDA',   name:'NVIDIA Corporation',                ex:'NASDAQ',tk:'NVDA',     cur:'USD', buy:131.38},
+  {id:'MU',     name:'Micron Technology',                 ex:'NASDAQ',tk:'MU',       cur:'USD', buy:724.66},
 ];
 
-let stocks = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
-
-// Load saved prices from localStorage
-function loadSaved() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('portfolio_buy_prices') || '{}');
-    stocks.forEach(s => {
-      if (saved[s.id] !== undefined) s.buyPrice = saved[s.id];
-    });
-  } catch(e) {}
+// ── AUD rate ────────────────────────────────────────
+function getRate(){ return parseFloat(document.getElementById('audrate').value)||0.635; }
+function saveRate(){ localStorage.setItem('aud_rate', document.getElementById('audrate').value); }
+function loadRate(){
+  const v = localStorage.getItem('aud_rate') || '0.6350';
+  document.getElementById('audrate').value = v;
 }
 
-function saveToLocal() {
-  const data = {};
-  stocks.forEach(s => data[s.id] = s.buyPrice);
-  localStorage.setItem('portfolio_buy_prices', JSON.stringify(data));
-  showToast('✅ 买入价格已保存到浏览器');
+async function fetchAudRate(){
+  try{
+    const btn = document.querySelector('.aud-fetch');
+    btn.textContent = '获取中…';
+    // Use Yahoo Finance AUDUSD=X
+    const price = await fetchViaProxies('AUDUSD=X');
+    if(price){
+      document.getElementById('audrate').value = price.toFixed(4);
+      saveRate(); renderTable();
+      showToast(`✅ 汇率已更新：AUD/USD = ${price.toFixed(4)}`);
+    }
+    btn.textContent = '⟳ 自动获取汇率';
+  }catch(e){
+    showToast('❌ 汇率获取失败，请手动输入');
+    document.querySelector('.aud-fetch').textContent='⟳ 自动获取汇率';
+  }
 }
 
-function resetPrices() {
-  DEFAULT_STOCKS.forEach(d => {
-    const s = stocks.find(x => x.id === d.id);
-    if (s) s.buyPrice = d.buyPrice;
-  });
-  renderTable();
-  showToast('↩ 已恢复默认买入价格（2026-05-17）');
+// ── Toast ────────────────────────────────────────────
+function showToast(msg,dur=2800){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-// ─── Toast ──────────────────────────────────────────
-function showToast(msg, dur=2500) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+// ── Status ───────────────────────────────────────────
+function setStatus(state,txt){
+  document.getElementById('sdot').className='sdot '+(state||'');
+  document.getElementById('stxt').textContent=txt;
 }
 
-// ─── Status helper ───────────────────────────────────
-function setStatus(state, text) {
-  const dot = document.getElementById('status-dot');
-  dot.className = 'status-dot ' + (state || '');
-  document.getElementById('status-text').textContent = text;
-}
+// ── AUD conversion ───────────────────────────────────
+function toAud(price, cur){ return cur==='AUD' ? price : price / getRate(); }
 
-// ─── Render ─────────────────────────────────────────
-function renderTable() {
-  const tbody = document.getElementById('table-body');
-  tbody.innerHTML = stocks.map((s, i) => {
-    const exBadge = s.exchange === 'ASX'
-      ? `<span class="exchange-badge asx">ASX</span>`
-      : s.exchange === 'NYSE'
-      ? `<span class="exchange-badge us">NYSE</span>`
-      : `<span class="exchange-badge us">NASDAQ</span>`;
+// ── Render ───────────────────────────────────────────
+function renderTable(){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = STOCKS.map(s=>{
+    const badge = s.ex==='ASX'
+      ? `<span class="badge asx">ASX</span>`
+      : `<span class="badge us">${s.ex}</span>`;
 
-    const cur = s.currentPrice;
-    let priceTd, diffTd, pctTd;
+    const buyAud = toAud(s.buy, s.cur);
+    const st = s.state; // undefined | 'loading' | 'error' | number
 
-    if (cur === undefined) {
-      priceTd = `<span class="current-price neutral">—</span>`;
-      diffTd  = `<span class="neutral">—</span>`;
-      pctTd   = `<span class="pct-badge pct-neutral">—</span>`;
-    } else if (cur === 'loading') {
-      priceTd = `<span class="current-price loading">获取中…</span>`;
-      diffTd  = `<span class="neutral">—</span>`;
-      pctTd   = `<span class="pct-badge pct-neutral">—</span>`;
-    } else if (cur === 'error') {
-      priceTd = `<span class="current-price error">获取失败</span>`;
-      diffTd  = `<span class="neutral">—</span>`;
-      pctTd   = `<span class="pct-badge pct-neutral">—</span>`;
+    let rawTd, curAudTd, diffTd, pctTd;
+
+    if(st===undefined){
+      rawTd='<span class="neu">—</span>';
+      curAudTd='<span class="neu">—</span>';
+      diffTd='<span class="neu">—</span>';
+      pctTd='<span class="pbadge pn">—</span>';
+    } else if(st==='loading'){
+      rawTd='<span class="cp-loading">获取中…</span>';
+      curAudTd=diffTd='<span class="neu">—</span>';
+      pctTd='<span class="pbadge pn">…</span>';
+    } else if(st==='error'){
+      rawTd='<span class="cp-err">获取失败</span>';
+      curAudTd=diffTd='<span class="neu">—</span>';
+      pctTd='<span class="pbadge pn">—</span>';
     } else {
-      const diff = cur - s.buyPrice;
-      const pct  = (diff / s.buyPrice) * 100;
-      const sign = diff >= 0 ? '+' : '';
-      const cls  = diff >= 0 ? 'gain' : 'loss';
-      const pctCls = diff >= 0 ? 'pct-gain' : 'pct-loss';
-      priceTd = `<span class="current-price ${cls}">${cur.toFixed(2)}</span>`;
-      diffTd  = `<span class="${cls}">${sign}${diff.toFixed(2)}</span>`;
-      pctTd   = `<span class="pct-badge ${pctCls}">${sign}${pct.toFixed(2)}%</span>`;
+      const ca = toAud(st, s.cur);
+      const d  = ca - buyAud;
+      const p  = (d/buyAud)*100;
+      const sg = d>=0?'+':'';
+      const gc = d>=0?'gain':'loss';
+      const pc = d>=0?'pg':'pl';
+      const dec = s.cur==='USD' ? 2 : 4;
+      rawTd    = `<span class="${gc}">${st.toFixed(dec)}</span>`;
+      curAudTd = `<span class="${gc}">${ca.toFixed(2)}</span>`;
+      diffTd   = `<span class="${gc}">${sg}${d.toFixed(2)}</span>`;
+      pctTd    = `<span class="pbadge ${pc}">${sg}${p.toFixed(2)}%</span>`;
     }
 
+    const dec0 = s.cur==='USD'?2:4;
     return `<tr>
-      <td><span class="ticker">${s.id}</span>${exBadge}</td>
-      <td>${s.name}</td>
-      <td style="text-align:center;font-size:11px;color:var(--muted)">${s.currency}</td>
-      <td><input class="price-input" type="number" step="0.01" value="${s.buyPrice}"
-          onchange="updateBuyPrice(${i}, this.value)"
-          onkeydown="if(event.key==='Enter')this.blur()"
-          title="点击编辑买入价格"></td>
-      <td>${priceTd}</td>
+      <td class="L"><span class="ticker">${s.id}</span>${badge}</td>
+      <td class="nm">${s.name}</td>
+      <td style="text-align:center;font-size:11px;color:var(--muted)">${s.cur}</td>
+      <td><span class="neu">${s.buy.toFixed(dec0)}</span></td>
+      <td>${rawTd}</td>
+      <td><span class="neu">${buyAud.toFixed(2)}</span></td>
+      <td>${curAudTd}</td>
       <td>${diffTd}</td>
       <td>${pctTd}</td>
-      <td style="font-size:11px;color:var(--muted);text-align:center">${s.currency}</td>
     </tr>`;
   }).join('');
 
   updateKPI();
 }
 
-function updateBuyPrice(i, val) {
-  const v = parseFloat(val);
-  if (!isNaN(v) && v > 0) {
-    stocks[i].buyPrice = v;
-    renderTable();
-    showToast(`✏️ ${stocks[i].id} 买入价已更新为 ${v}`);
+function updateKPI(){
+  const priced = STOCKS.filter(s=>typeof s.state==='number');
+  if(!priced.length){
+    ['kbest','kworst','kavg'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('kavg').className='kpi-v';
+    return;
   }
+  const data = priced.map(s=>{
+    const ca=toAud(s.state,s.cur), ba=toAud(s.buy,s.cur);
+    return {id:s.id, p:((ca-ba)/ba)*100};
+  });
+  const best  = data.reduce((a,b)=>a.p>b.p?a:b);
+  const worst = data.reduce((a,b)=>a.p<b.p?a:b);
+  const avg   = data.reduce((s,x)=>s+x.p,0)/data.length;
+  const fmt   = v=>(v>=0?'+':'')+v.toFixed(1)+'%';
+  document.getElementById('kbest').textContent  = `${best.id}  ${fmt(best.p)}`;
+  document.getElementById('kworst').textContent = `${worst.id}  ${fmt(worst.p)}`;
+  document.getElementById('kavg').textContent   = (avg>=0?'+':'')+avg.toFixed(2)+'%';
+  document.getElementById('kavg').className     = 'kpi-v '+(avg>=0?'gain':'loss');
 }
 
-function updateKPI() {
-  const priced = stocks.filter(s => typeof s.currentPrice === 'number');
-  const gains  = priced.filter(s => s.currentPrice >= s.buyPrice);
-  const losses = priced.filter(s => s.currentPrice < s.buyPrice);
+// ── Multi-proxy fetch ─────────────────────────────────
+const PROXY_FNS = [
+  // corsproxy.io — wraps response directly (no envelope)
+  u => ({ url:`https://corsproxy.io/?${encodeURIComponent(u)}`, unwrap: false }),
+  // allorigins — wraps in {contents: "..."}
+  u => ({ url:`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, unwrap: true }),
+  // codetabs — direct
+  u => ({ url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, unwrap: false }),
+];
 
-  document.getElementById('kpi-gain').textContent = priced.length ? gains.length : '—';
-  document.getElementById('kpi-loss').textContent = priced.length ? losses.length : '—';
-
-  if (priced.length) {
-    const pcts = priced.map(s => ((s.currentPrice - s.buyPrice) / s.buyPrice) * 100);
-    const best  = Math.max(...pcts);
-    const worst = Math.min(...pcts);
-    const bestS  = priced[pcts.indexOf(best)];
-    const worstS = priced[pcts.indexOf(worst)];
-    document.getElementById('kpi-best').textContent
-      = `${bestS.id} +${best.toFixed(1)}%`;
-    document.getElementById('kpi-worst').textContent
-      = `${worstS.id} ${worst.toFixed(1)}%`;
-  } else {
-    document.getElementById('kpi-best').textContent  = '—';
-    document.getElementById('kpi-worst').textContent = '—';
+async function tryProxy(yahooUrl, idx){
+  if(idx >= PROXY_FNS.length) throw new Error('all proxies exhausted');
+  const {url, unwrap} = PROXY_FNS[idx](yahooUrl);
+  const res = await fetch(url, {
+    cache:'no-cache',
+    signal: AbortSignal.timeout(12000),
+  });
+  if(!res.ok) throw new Error(`HTTP ${res.status} from proxy ${idx}`);
+  let text = await res.text();
+  if(unwrap){
+    // allorigins format: {status:{...}, contents:"JSON string"}
+    const outer = JSON.parse(text);
+    text = outer.contents;
   }
-}
-
-// ─── Fetch prices ────────────────────────────────────
-// Uses allorigins.win as CORS proxy to reach Yahoo Finance quote API
-async function fetchPrice(ticker) {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res = await fetch(proxy, { cache: 'no-cache' });
-  if (!res.ok) throw new Error('proxy error');
-  const outer = await res.json();
-  const data = JSON.parse(outer.contents);
-  const meta = data?.chart?.result?.[0]?.meta;
+  const json = JSON.parse(text);
+  const meta = json?.chart?.result?.[0]?.meta;
   const price = meta?.regularMarketPrice ?? meta?.previousClose;
-  if (!price) throw new Error('no price');
+  if(typeof price !== 'number') throw new Error('no price field');
   return price;
 }
 
-async function fetchAllPrices() {
-  const btn = document.getElementById('refresh-btn');
-  const icon = document.getElementById('btn-icon');
-  btn.disabled = true;
-  icon.style.display = 'inline-block';
-  icon.style.animation = 'spin .8s linear infinite';
+async function fetchViaProxies(ticker){
+  const yUrl1 = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  const yUrl2 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  const errors = [];
 
-  // Add spin keyframes once
-  if (!document.getElementById('spin-style')) {
-    const st = document.createElement('style');
-    st.id = 'spin-style';
-    st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}#btn-icon{display:inline-block}';
-    document.head.appendChild(st);
+  for(let pi=0; pi<PROXY_FNS.length; pi++){
+    for(const yUrl of [yUrl1, yUrl2]){
+      try{
+        return await tryProxy(yUrl, pi);
+      }catch(e){
+        errors.push(`proxy${pi}+${yUrl.includes('query1')?'q1':'q2'}: ${e.message}`);
+      }
+    }
   }
+  throw new Error(errors.join(' | '));
+}
 
-  setStatus('loading', '正在获取价格…');
+async function fetchAll(){
+  const btn=document.getElementById('rbtn');
+  const ic=document.getElementById('bicon');
+  btn.disabled=true; ic.className='spin';
+  setStatus('loading','正在获取价格…');
+  document.getElementById('epanel').classList.remove('show');
 
-  // mark all as loading
-  stocks.forEach(s => s.currentPrice = 'loading');
+  STOCKS.forEach(s=>s.state='loading');
   renderTable();
 
-  let ok = 0, fail = 0;
+  let ok=0,fail=0;
+  const errs=[];
 
-  await Promise.all(stocks.map(async (s) => {
-    try {
-      const price = await fetchPrice(s.ticker);
-      s.currentPrice = price;
+  await Promise.allSettled(STOCKS.map(async s=>{
+    try{
+      s.state = await fetchViaProxies(s.tk);
       ok++;
-    } catch(e) {
-      s.currentPrice = 'error';
-      fail++;
+    }catch(e){
+      s.state='error'; fail++;
+      errs.push(`• <b>${s.id}</b> (${s.tk}): ${e.message}`);
     }
     renderTable();
   }));
 
-  const now = new Date().toLocaleString('zh-CN', {
-    month:'2-digit', day:'2-digit',
-    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  const now = new Date().toLocaleString('zh-CN',{
+    month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit'
   });
-  document.getElementById('last-updated').textContent = `最后更新：${now}`;
+  document.getElementById('last-upd').textContent=`最后更新：${now}`;
 
-  if (fail === 0) {
-    setStatus('ok', `全部 ${ok} 只获取成功`);
-    showToast(`✅ 价格更新完成（${ok} 只）`);
+  if(fail===0){
+    setStatus('ok',`全部 ${ok} 只成功`);
+    showToast(`✅ 价格更新成功（${ok} 只）`);
   } else {
-    setStatus('error', `${ok} 只成功 / ${fail} 只失败`);
-    showToast(`⚠️ ${fail} 只获取失败，请稍后重试`, 4000);
+    setStatus('err',`${ok} 只成功 / ${fail} 只失败`);
+    showToast(`⚠️ ${fail} 只获取失败，请看下方诊断`,4500);
+    document.getElementById('edetail').innerHTML =
+      `<b>失败股票（${errs.length} 只）：</b><br>`+errs.join('<br>')
+      +`<br><br><b>🔧 解决方法（按顺序尝试）：</b><br>`
+      +`① 关闭浏览器广告拦截插件（uBlock Origin / AdGuard / 1Blocker），然后刷新重试<br>`
+      +`② 确保网络能访问 <a href="https://finance.yahoo.com" target="_blank" style="color:var(--accent)">finance.yahoo.com</a><br>`
+      +`③ 若使用 VPN，尝试切换节点（选择美国/香港节点）<br>`
+      +`④ 等待 2~3 分钟后重试（Yahoo Finance 有请求频率限制）<br>`
+      +`⑤ 在浏览器新标签页打开：<code style="color:var(--amber)">https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/NVDA</code>，若页面返回 JSON 则代理正常`;
+    document.getElementById('epanel').classList.add('show');
   }
 
-  btn.disabled = false;
-  icon.style.animation = '';
-  icon.textContent = '⟳';
+  btn.disabled=false; ic.className=''; ic.textContent='⟳';
 }
 
-// ─── Init ────────────────────────────────────────────
-loadSaved();
+// ── Init ─────────────────────────────────────────────
+loadRate();
 renderTable();
 </script>
 </body>
