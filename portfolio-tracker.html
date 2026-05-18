@@ -324,7 +324,11 @@ const HOLDINGS = [
   },
   {
     id:'PMGOLD', name:'Perth Mint Physical Gold',
-    ex:'ASX', tk:'PMGOLD.AX', cur:'AUD',
+    ex:'ASX',
+    // Yahoo Finance returns PMGOLD.AX in USD (data bug) - use GOLD.AX as proxy
+    // then apply AUD/USD rate to get true AUD price.
+    // Better: fetch PMGOLD.AX and multiply by ~AUD/USD since Yahoo quotes it in USD
+    tk:'PMGOLD.AX', cur:'AUD', yahooInUSD:true,
     buy:62.9000, qty:16, buyDate:'2026-05-18'
   },
   {
@@ -646,20 +650,30 @@ async function fetchAll(){
   let ok=0,fail=0;
   const errs=[];
 
-  // fetch FX rates + stock prices in parallel
-  await Promise.all([
-    fetchFxRates(),
-    Promise.allSettled(HOLDINGS.map(async s=>{
-      try{
-        s.state=await fetchViaProxies(s.tk);
-        ok++;
-      }catch(e){
-        s.state='error'; fail++;
-        errs.push(`• <b>${s.id}</b> (${s.tk}): ${e.message}`);
+  // fetch FX rates first so we have AUD/USD before correcting PMGOLD
+  await fetchFxRates();
+
+  await Promise.allSettled(HOLDINGS.map(async s=>{
+    try{
+      let price = await fetchViaProxies(s.tk);
+
+      // ── PMGOLD fix ─────────────────────────────────────────────
+      // Yahoo Finance quotes PMGOLD.AX in USD (data error).
+      // Real AUD price = Yahoo USD price / AUD/USD rate.
+      // Cross-check: if fetched price < 30, it's almost certainly in USD.
+      if(s.yahooInUSD || (s.id==='PMGOLD' && price < 30)){
+        const audUsd = parseFloat(document.getElementById('audrate').value) || 0.635;
+        price = price / audUsd;
       }
-      renderTable();
-    }))
-  ]);
+
+      s.state = price;
+      ok++;
+    }catch(e){
+      s.state='error'; fail++;
+      errs.push(`• <b>${s.id}</b> (${s.tk}): ${e.message}`);
+    }
+    renderTable();
+  }));
 
   const now=new Date().toLocaleString('zh-CN',{
     month:'2-digit',day:'2-digit',
