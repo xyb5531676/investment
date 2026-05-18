@@ -3,140 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>投资组合收益监控</title>
+<title>Portfolio Monitor · XUE</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0e14;--surface:#111720;--surface2:#1a2232;
-  --border:#1e2d44;--border2:#253650;
-  --text:#cdd6f4;--muted:#6b7fa3;--accent:#4fc3f7;
-  --green:#a6da95;--gdim:#1e3a2a;
-  --red:#f38ba8;  --rdim:#3a1e2a;
-  --amber:#f9e2af;
-  --mono:'IBM Plex Mono',monospace;
-  --sans:'IBM Plex Sans',sans-serif;
+  --bg:#0a0e14;--sf:#111720;--sf2:#1a2232;
+  --bd:#1e2d44;--bd2:#253650;
+  --tx:#cdd6f4;--mt:#6b7fa3;--ac:#4fc3f7;
+  --gn:#a6da95;--gd:#1e3a2a;
+  --rd:#f38ba8;--rdm:#3a1e2a;
+  --am:#f9e2af;
+  --mn:'IBM Plex Mono',monospace;
+  --ss:'IBM Plex Sans',sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);
+body{background:var(--bg);color:var(--tx);font-family:var(--ss);
      min-height:100vh;padding:24px 16px 60px}
 
 /* Header */
-.hdr{max-width:1100px;margin:0 auto 24px;display:flex;
+.hdr{max-width:1080px;margin:0 auto 22px;display:flex;
      align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;
-     border-bottom:1px solid var(--border);padding-bottom:18px}
+     border-bottom:1px solid var(--bd);padding-bottom:16px}
 .logo{display:flex;align-items:center;gap:10px}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--accent);
-     box-shadow:0 0 10px var(--accent);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
-h1{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--accent);letter-spacing:.04em}
-.sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--mono)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--ac);
+     box-shadow:0 0 12px var(--ac);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.35)}}
+h1{font-family:var(--mn);font-size:17px;font-weight:600;color:var(--ac);letter-spacing:.05em}
+.sub{font-size:11px;color:var(--mt);margin-top:3px;font-family:var(--mn)}
 
 /* Topbar */
-.topbar{max-width:1100px;margin:0 auto 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.btn{font-family:var(--mono);font-size:12px;font-weight:500;padding:9px 18px;
-     border-radius:6px;border:1px solid var(--border2);cursor:pointer;transition:all .18s;
-     display:flex;align-items:center;gap:7px;white-space:nowrap}
-.btn-p{background:var(--accent);color:#000;border-color:var(--accent)}
+.topbar{max-width:1080px;margin:0 auto 18px;display:flex;gap:10px;
+        flex-wrap:wrap;align-items:center}
+.btn{font-family:var(--mn);font-size:12px;font-weight:500;padding:8px 18px;
+     border-radius:6px;border:1px solid var(--bd2);cursor:pointer;
+     transition:all .18s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.btn-p{background:var(--ac);color:#000;border-color:var(--ac)}
 .btn-p:hover{background:#81d4fa}
 .btn-p:disabled{opacity:.5;cursor:not-allowed}
-.sbar{font-family:var(--mono);font-size:11px;color:var(--muted);
+.sbar{font-family:var(--mn);font-size:11px;color:var(--mt);
       margin-left:auto;display:flex;align-items:center;gap:6px}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
-.sdot.loading{background:var(--amber);animation:pulse .8s ease-in-out infinite}
-.sdot.ok{background:var(--green)}.sdot.err{background:var(--red)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--mt);flex-shrink:0}
+.sdot.loading{background:var(--am);animation:pulse .7s ease-in-out infinite}
+.sdot.ok{background:var(--gn)}.sdot.err{background:var(--rd)}
 
 /* AUD bar */
-.audbar{max-width:1100px;margin:0 auto 16px;
-        background:var(--surface);border:1px solid var(--border);border-radius:8px;
+.audbar{max-width:1080px;margin:0 auto 16px;background:var(--sf);
+        border:1px solid var(--bd);border-radius:8px;
         padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.audbar label{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
-.aud-in{background:var(--surface2);border:1px solid var(--border2);border-radius:4px;
-        color:var(--accent);font-family:var(--mono);font-size:13px;font-weight:600;
-        padding:4px 8px;width:82px;text-align:right}
-.aud-in:focus{outline:none;border-color:var(--accent)}
-.audhint{font-family:var(--mono);font-size:10px;color:var(--muted)}
-.aud-fetch{font-family:var(--mono);font-size:10px;color:var(--accent);
-           cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+.audbar label{font-family:var(--mn);font-size:11px;color:var(--mt);white-space:nowrap}
+.aud-in{background:var(--sf2);border:1px solid var(--bd2);border-radius:4px;
+        color:var(--ac);font-family:var(--mn);font-size:13px;font-weight:600;
+        padding:4px 8px;width:84px;text-align:right}
+.aud-in:focus{outline:none;border-color:var(--ac)}
+.afbtn{font-family:var(--mn);font-size:10px;color:var(--ac);
+       cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+.ahint{font-family:var(--mn);font-size:10px;color:var(--mt)}
+
+/* FX Monitor */
+.fxbar{max-width:1080px;margin:0 auto 16px;
+       background:var(--sf);border:1px solid var(--bd);border-radius:8px;
+       padding:14px 18px}
+.fxbar-title{font-family:var(--mn);font-size:10px;font-weight:500;
+             color:var(--mt);letter-spacing:.07em;text-transform:uppercase;
+             margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.fxbar-title::after{content:'';flex:1;height:1px;background:var(--bd)}
+.fx-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.fx-card{background:var(--sf2);border:1px solid var(--bd2);border-radius:8px;
+         padding:12px 16px;display:flex;align-items:center;gap:14px}
+.fx-flags{font-size:22px;line-height:1;flex-shrink:0}
+.fx-info{flex:1}
+.fx-pair{font-family:var(--mn);font-size:11px;color:var(--mt);margin-bottom:4px}
+.fx-rate{font-family:var(--mn);font-size:20px;font-weight:600;color:var(--tx)}
+.fx-rate.loading{font-size:13px;color:var(--mt)}
+.fx-rate.err{font-size:12px;color:var(--rd)}
+.fx-sub{font-family:var(--mn);font-size:10px;color:var(--mt);margin-top:3px}
+.fx-chg{font-family:var(--mn);font-size:12px;font-weight:500;
+        text-align:right;flex-shrink:0}
 
 /* KPI */
-.kpi-row{max-width:1100px;margin:0 auto 22px;
-         display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
-.kpi-l{font-size:10px;color:var(--muted);font-family:var(--mono);
-        letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-.kpi-v{font-family:var(--mono);font-size:20px;font-weight:600}
+.krow{max-width:1080px;margin:0 auto 20px;
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.kpi{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:13px 16px}
+.kl{font-size:10px;color:var(--mt);font-family:var(--mn);
+    letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px}
+.kv{font-family:var(--mn);font-size:19px;font-weight:600}
 
 /* Table */
-.twrap{max-width:1100px;margin:0 auto;overflow-x:auto;
-       border-radius:12px;border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
-thead{background:var(--surface2)}
-th{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--muted);
-   letter-spacing:.08em;text-transform:uppercase;padding:11px 14px;
-   text-align:right;white-space:nowrap;border-bottom:1px solid var(--border)}
+.tw{max-width:1080px;margin:0 auto;overflow-x:auto;
+    border-radius:12px;border:1px solid var(--bd)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:680px}
+thead{background:var(--sf2)}
+th{font-family:var(--mn);font-size:10px;font-weight:500;color:var(--mt);
+   letter-spacing:.07em;text-transform:uppercase;padding:10px 13px;
+   text-align:right;white-space:nowrap;border-bottom:1px solid var(--bd)}
 th.L{text-align:left}
 tr{transition:background .12s}
-tbody tr:hover{background:var(--surface2)}
-td{padding:13px 14px;border-bottom:1px solid var(--border);
-   text-align:right;font-family:var(--mono);font-size:13px;vertical-align:middle}
+tbody tr:hover{background:var(--sf2)}
+td{padding:12px 13px;border-bottom:1px solid var(--bd);
+   text-align:right;font-family:var(--mn);font-size:13px;vertical-align:middle}
 td.L{text-align:left}
-td.nm{text-align:left;font-family:var(--sans);font-size:12px;color:var(--muted)}
+td.nm{text-align:left;font-family:var(--ss);font-size:12px;color:var(--mt)}
 tbody tr:last-child td{border-bottom:none}
 
-.ticker{font-family:var(--mono);font-size:13px;font-weight:600;
-        color:var(--accent);letter-spacing:.03em}
-.badge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;
-       margin-left:5px;font-family:var(--mono);vertical-align:middle}
+/* total row */
+tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
+                background:var(--sf2);font-size:13px}
+
+.ticker{font-family:var(--mn);font-size:13px;font-weight:600;
+        color:var(--ac);letter-spacing:.03em}
+.bdg{display:inline-block;font-size:9px;padding:1px 5px;border-radius:3px;
+     margin-left:5px;font-family:var(--mn);vertical-align:middle}
 .asx{background:#1e3a5f;color:#4fc3f7}
 .us{background:#2a1e3a;color:#cba6f7}
 
-.gain{color:var(--green)}.loss{color:var(--red)}.neu{color:var(--muted)}
-.cp-loading{color:var(--muted);font-size:11px}
-.cp-err{color:var(--red);font-size:11px}
+.gain{color:var(--gn)}.loss{color:var(--rd)}.neu{color:var(--mt)}
+.cp-load{color:var(--mt);font-size:11px}
+.cp-err{color:var(--rd);font-size:11px}
 
-.pbadge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500}
-.pg{background:var(--gdim);color:var(--green)}
-.pl{background:var(--rdim);color:var(--red)}
-.pn{background:var(--surface2);color:var(--muted)}
+.pb{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:500}
+.pg{background:var(--gd);color:var(--gn)}
+.pl{background:var(--rdm);color:var(--rd)}
+.pn{background:var(--sf2);color:var(--mt)}
 
-/* Error panel */
-.epanel{max-width:1100px;margin:12px auto 0;
-        background:#1a0e12;border:1px solid var(--rdim);border-radius:8px;
-        padding:12px 16px;font-family:var(--mono);font-size:11px;
-        color:var(--red);display:none;line-height:1.8}
-.epanel.show{display:block}
-.epanel h4{color:var(--amber);margin-bottom:6px}
+/* date tag */
+.dtag{font-size:10px;color:var(--mt);display:block;margin-top:2px}
 
-/* Footer */
-.footer{max-width:1100px;margin:22px auto 0;font-size:11px;color:var(--muted);
-        font-family:var(--mono);line-height:1.8;
-        border-top:1px solid var(--border);padding-top:14px}
-.footer a{color:var(--accent);text-decoration:none}
+/* error panel */
+.ep{max-width:1080px;margin:12px auto 0;background:#1a0e12;
+    border:1px solid var(--rdm);border-radius:8px;
+    padding:12px 16px;font-family:var(--mn);font-size:11px;
+    color:var(--rd);display:none;line-height:1.9}
+.ep.show{display:block}
+.ep h4{color:var(--am);margin-bottom:6px}
 
-/* Toast */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);
-       border:1px solid var(--border2);border-radius:8px;padding:12px 18px;
-       font-family:var(--mono);font-size:12px;color:var(--text);
-       opacity:0;transform:translateY(10px);transition:all .25s;
+/* footer */
+.footer{max-width:1080px;margin:22px auto 0;font-size:11px;color:var(--mt);
+        font-family:var(--mn);line-height:1.8;
+        border-top:1px solid var(--bd);padding-top:14px}
+.footer a{color:var(--ac);text-decoration:none}
+
+/* toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--sf2);
+       border:1px solid var(--bd2);border-radius:8px;padding:11px 16px;
+       font-family:var(--mn);font-size:12px;color:var(--tx);
+       opacity:0;transform:translateY(8px);transition:all .22s;
        pointer-events:none;z-index:99}
 .toast.show{opacity:1;transform:translateY(0)}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{display:inline-block;animation:spin .7s linear infinite}
 </style>
 </head>
 <body>
 
+<!-- ── Header ── -->
 <div class="hdr">
   <div>
-    <div class="logo"><div class="dot"></div><h1>PORTFOLIO MONITOR</h1></div>
-    <div class="sub">投资组合收益追踪 · 全部折算 AUD 计价 · 基准日 2026-05-17</div>
+    <div class="logo"><div class="dot"></div><h1>PORTFOLIO MONITOR · XUE</h1></div>
+    <div class="sub">实际持仓收益追踪 · 全部 AUD 计价 · CommSec 成交价基准</div>
   </div>
   <div style="text-align:right">
-    <div id="last-upd" style="font-family:var(--mono);font-size:11px;color:var(--muted)">尚未获取价格</div>
-    <div style="font-family:var(--mono);font-size:10px;color:#444;margin-top:3px">买入日：2026-05-17（周六按周五收盘价）</div>
+    <div id="last-upd" style="font-family:var(--mn);font-size:11px;color:var(--mt)">尚未获取价格</div>
+    <div style="font-family:var(--mn);font-size:10px;color:#444;margin-top:2px">CommSec 执行价（含手续费摊入）</div>
   </div>
 </div>
 
+<!-- ── Topbar ── -->
 <div class="topbar">
   <button class="btn btn-p" id="rbtn" onclick="fetchAll()">
     <span id="bicon">⟳</span> 获取当前价格
@@ -147,45 +179,102 @@ tbody tr:last-child td{border-bottom:none}
   </div>
 </div>
 
+<!-- ── AUD bar ── -->
 <div class="audbar">
-  <label>🇦🇺 AUD/USD 汇率（USD股票折算用）：</label>
+  <label>🇦🇺 AUD/USD 汇率：</label>
   <input class="aud-in" type="number" id="audrate" step="0.0001"
-         onchange="saveRate(); renderTable()" title="输入当前 AUD/USD 汇率">
-  <button class="aud-fetch" onclick="fetchAudRate()">⟳ 自动获取汇率</button>
-  <span class="audhint">美股价格 ÷ 汇率 = AUD 等值</span>
+         onchange="saveRate();renderTable()" title="AUD/USD 汇率">
+  <button class="afbtn" onclick="fetchAudRate()">⟳ 自动获取汇率</button>
+  <span class="ahint">· 美股(IVV/IHVV/NDQ)用此汇率折算 AUD · ASX 股票无需换算</span>
 </div>
 
-<div class="kpi-row">
-  <div class="kpi">
-    <div class="kpi-l">持仓总数</div>
-    <div class="kpi-v" style="color:var(--accent)">10</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-l">最大涨幅</div>
-    <div class="kpi-v gain" id="kbest">—</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-l">最大跌幅</div>
-    <div class="kpi-v loss" id="kworst">—</div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-l">组合平均收益率</div>
-    <div class="kpi-v" id="kavg">—</div>
+<!-- ── FX Monitor ── -->
+<div class="fxbar">
+  <div class="fxbar-title">🌐 汇率监控</div>
+  <div class="fx-grid">
+
+    <div class="fx-card">
+      <div class="fx-flags">🇦🇺🇨🇳</div>
+      <div class="fx-info">
+        <div class="fx-pair">AUD / CNY（人民币）</div>
+        <div class="fx-rate" id="fx-audcny">—</div>
+        <div class="fx-sub" id="fx-audcny-sub">1 AUD = ? CNY</div>
+      </div>
+      <div class="fx-chg" id="fx-audcny-chg"></div>
+    </div>
+
+    <div class="fx-card">
+      <div class="fx-flags">🇨🇳🇦🇺</div>
+      <div class="fx-info">
+        <div class="fx-pair">CNY / AUD（澳元）</div>
+        <div class="fx-rate" id="fx-cnyaud">—</div>
+        <div class="fx-sub" id="fx-cnyaud-sub">1 CNY = ? AUD</div>
+      </div>
+      <div class="fx-chg" id="fx-cnyaud-chg"></div>
+    </div>
+
+    <div class="fx-card">
+      <div class="fx-flags">🇦🇺🇺🇸</div>
+      <div class="fx-info">
+        <div class="fx-pair">AUD / USD（美元）</div>
+        <div class="fx-rate" id="fx-audusd">—</div>
+        <div class="fx-sub" id="fx-audusd-sub">1 AUD = ? USD</div>
+      </div>
+      <div class="fx-chg" id="fx-audusd-chg"></div>
+    </div>
+
+    <div class="fx-card">
+      <div class="fx-flags">🇨🇳🇺🇸</div>
+      <div class="fx-info">
+        <div class="fx-pair">CNY / USD（美元）</div>
+        <div class="fx-rate" id="fx-cnyusd">—</div>
+        <div class="fx-sub" id="fx-cnyusd-sub">1 CNY = ? USD</div>
+      </div>
+      <div class="fx-chg" id="fx-cnyusd-chg"></div>
+    </div>
+
   </div>
 </div>
 
-<div class="twrap">
+<!-- ── KPI ── -->
+<div class="krow">
+  <div class="kpi">
+    <div class="kl">持仓总数</div>
+    <div class="kv" style="color:var(--ac)" id="ktotal">6</div>
+  </div>
+  <div class="kpi">
+    <div class="kl">总持仓市值</div>
+    <div class="kv" id="kmktval">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kl">总浮动盈亏</div>
+    <div class="kv" id="ktotalpnl">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kl">最大涨幅</div>
+    <div class="kv gain" id="kbest">—</div>
+  </div>
+  <div class="kpi">
+    <div class="kl">最大跌幅</div>
+    <div class="kv loss" id="kworst">—</div>
+  </div>
+</div>
+
+<!-- ── Table ── -->
+<div class="tw">
   <table>
     <thead>
       <tr>
         <th class="L">代码</th>
         <th class="L">名称</th>
-        <th>原币</th>
-        <th>买入价<br><span style="font-size:8px;opacity:.6">原始货币</span></th>
-        <th>当前价<br><span style="font-size:8px;opacity:.6">原始货币</span></th>
-        <th>买入价<br><span style="font-size:8px;opacity:.6">AUD</span></th>
-        <th>当前价<br><span style="font-size:8px;opacity:.6">AUD</span></th>
-        <th>涨跌额<br><span style="font-size:8px;opacity:.6">AUD</span></th>
+        <th>持仓<br><span style="font-size:8px;opacity:.5">数量</span></th>
+        <th>买入价<br><span style="font-size:8px;opacity:.5">原币</span></th>
+        <th>当前价<br><span style="font-size:8px;opacity:.5">原币</span></th>
+        <th>买入价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
+        <th>当前价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
+        <th>持仓成本<br><span style="font-size:8px;opacity:.5">AUD</span></th>
+        <th>市值<br><span style="font-size:8px;opacity:.5">AUD</span></th>
+        <th>浮动盈亏<br><span style="font-size:8px;opacity:.5">AUD</span></th>
         <th>收益率</th>
       </tr>
     </thead>
@@ -193,138 +282,309 @@ tbody tr:last-child td{border-bottom:none}
   </table>
 </div>
 
-<div class="epanel" id="epanel">
-  <h4>⚠️ 获取失败 — 诊断与解决方法</h4>
+<!-- ── Error panel ── -->
+<div class="ep" id="epanel">
+  <h4>⚠️ 获取失败 — 诊断信息</h4>
   <div id="edetail"></div>
 </div>
 
+<!-- ── Footer ── -->
 <div class="footer">
-  💡 说明：美股（BRK.B / NVDA / MU）原价为 USD，通过上方汇率自动折算 AUD 显示。ASX ETF 原价即 AUD，无需换算。<br>
-  ⟳ 数据来自 Yahoo Finance（通过 <a href="https://corsproxy.io" target="_blank">corsproxy.io</a> / allorigins 代理，约15分钟延迟）。<br>
-  ❓ 若全部失败：① 关闭广告拦截插件（uBlock/AdGuard）② 检查能否访问 <a href="https://finance.yahoo.com" target="_blank">finance.yahoo.com</a> ③ 等候片刻重试。
+  💡 IVV / IHVV / NDQ 在美国交易所挂牌，通过上方 AUD/USD 汇率自动折算。PMGOLD / VAF / NXT 为 ASX 直接 AUD 计价。<br>
+  ⟳ 行情来自 Yahoo Finance（约15分钟延迟）。若获取失败：① 关闭广告拦截插件 ② 检查网络能否访问 <a href="https://finance.yahoo.com" target="_blank">finance.yahoo.com</a> ③ 稍等后重试。
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Data ────────────────────────────────────────────
-const STOCKS = [
-  {id:'IVV',    name:'iShares S&P 500 ETF',              ex:'ASX',   tk:'IVV.AX',   cur:'AUD', buy:69.27},
-  {id:'IHVV',   name:'iShares S&P 500 AUD Hedged ETF',   ex:'ASX',   tk:'IHVV.AX',  cur:'AUD', buy:62.67},
-  {id:'NDQ',    name:'BetaShares NASDAQ 100 ETF',         ex:'ASX',   tk:'NDQ.AX',   cur:'AUD', buy:59.92},
-  {id:'PMGOLD', name:'Perth Mint Physical Gold',          ex:'ASX',   tk:'PMGOLD.AX',cur:'AUD', buy:31.80},
-  {id:'GOLD',   name:'Global X Physical Gold',            ex:'ASX',   tk:'GOLD.AX',  cur:'AUD', buy:63.06},
-  {id:'BRK.B',  name:'Berkshire Hathaway Class B',        ex:'NYSE',  tk:'BRK-B',    cur:'USD', buy:482.60},
-  {id:'VDHG',   name:'Vanguard Diversified High Growth',  ex:'ASX',   tk:'VDHG.AX',  cur:'AUD', buy:74.34},
-  {id:'VGS',    name:'Vanguard MSCI International ETF',   ex:'ASX',   tk:'VGS.AX',   cur:'AUD', buy:146.72},
-  {id:'NVDA',   name:'NVIDIA Corporation',                ex:'NASDAQ',tk:'NVDA',     cur:'USD', buy:131.38},
-  {id:'MU',     name:'Micron Technology',                 ex:'NASDAQ',tk:'MU',       cur:'USD', buy:724.66},
+// ── Holdings ─────────────────────────────────────────────────────
+// Exchange & ticker for Yahoo Finance:
+//   ASX stocks: append ".AX"
+//   US-listed (CDI on ASX but priced in USD on NASDAQ/NYSE): no suffix for Yahoo
+//   Note: IVV.AX on ASX is CDI of US IVV → priced in AUD on ASX → use IVV.AX
+//   IHVV.AX → priced AUD on ASX → use IHVV.AX
+//   NDQ.AX  → priced AUD on ASX → use NDQ.AX
+//   All three are actually AUD-priced on ASX! ✓
+
+const HOLDINGS = [
+  {
+    id:'IVV', name:'iShares S&P 500 ETF',
+    ex:'ASX', tk:'IVV.AX', cur:'AUD',
+    buy:68.8800, qty:65, buyDate:'2026-05-18'
+  },
+  {
+    id:'IHVV', name:'iShares S&P 500 AUD Hedged ETF',
+    ex:'ASX', tk:'IHVV.AX', cur:'AUD',
+    buy:66.9000, qty:22, buyDate:'2026-05-18'
+  },
+  {
+    id:'NDQ', name:'BetaShares NASDAQ 100 ETF',
+    ex:'ASX', tk:'NDQ.AX', cur:'AUD',
+    buy:59.8000, qty:33, buyDate:'2026-05-18'
+  },
+  {
+    id:'PMGOLD', name:'Perth Mint Physical Gold',
+    ex:'ASX', tk:'PMGOLD.AX', cur:'AUD',
+    buy:62.9000, qty:16, buyDate:'2026-05-18'
+  },
+  {
+    id:'VAF', name:'Vanguard Australian Fixed Interest ETF',
+    ex:'ASX', tk:'VAF.AX', cur:'AUD',
+    buy:45.0000, qty:22, buyDate:'2026-05-18'
+  },
+  {
+    id:'NXT', name:'NEXTDC Limited',
+    ex:'ASX', tk:'NXT.AX', cur:'AUD',
+    buy:12.5260, qty:770, buyDate:'2022-01-05'
+  },
 ];
 
-// ── AUD rate ────────────────────────────────────────
+// ── FX Rates ──────────────────────────────────────────────────────
+const FX_PAIRS = [
+  { id:'audcny',  ticker:'AUDCNY=X', label:'AUD/CNY', inv:'CNY/AUD', invId:'cnyaud',  dp:4 },
+  { id:'audusd',  ticker:'AUDUSD=X', label:'AUD/USD', inv:'USD/AUD', invId:'usdaud',  dp:4 },
+  { id:'cnyusd',  ticker:'CNYUSD=X', label:'CNY/USD', inv:'USD/CNY', invId:'usdcny',  dp:6 },
+];
+
+function setFxCard(id, rate, prevClose){
+  const el    = document.getElementById(`fx-${id}`);
+  const subEl = document.getElementById(`fx-${id}-sub`);
+  const chgEl = document.getElementById(`fx-${id}-chg`);
+  if(!el) return;
+
+  const pair = FX_PAIRS.find(p=>p.id===id || p.invId===id);
+  const dp   = pair?.dp ?? 4;
+
+  el.className = 'fx-rate';
+  el.textContent = rate.toFixed(dp);
+
+  // inverse card
+  const invId  = pair?.invId;
+  const invEl  = invId ? document.getElementById(`fx-${invId}`) : null;
+  const invSub = invId ? document.getElementById(`fx-${invId}-sub`) : null;
+  if(invEl && id === pair.id){
+    invEl.className = 'fx-rate';
+    invEl.textContent = (1/rate).toFixed(dp);
+    if(invSub) invSub.textContent = `1 ${pair.inv.split('/')[0]} = ${(1/rate).toFixed(dp)} ${pair.inv.split('/')[1]}`;
+  }
+
+  // sub text
+  if(subEl){
+    const lbl = pair ? pair.label : id.toUpperCase();
+    const [from,to] = lbl.split('/');
+    if(id === pair?.id)
+      subEl.textContent = `1 ${from} = ${rate.toFixed(dp)} ${to}`;
+  }
+
+  // change vs prev close
+  if(chgEl && prevClose && prevClose>0){
+    const chg    = rate - prevClose;
+    const chgPct = (chg/prevClose)*100;
+    const sign   = chg>=0?'+':'';
+    const color  = chg>=0?'var(--gn)':'var(--rd)';
+    chgEl.innerHTML = `<span style="color:${color};font-size:12px;font-family:var(--mn)">
+      ${sign}${chgPct.toFixed(3)}%<br>
+      <span style="font-size:10px;opacity:.7">${sign}${chg.toFixed(dp)}</span>
+    </span>`;
+  }
+}
+
+function setFxLoading(id){
+  const el=document.getElementById(`fx-${id}`);
+  if(el){ el.className='fx-rate loading'; el.textContent='获取中…'; }
+  const invPair = FX_PAIRS.find(p=>p.id===id);
+  if(invPair){
+    const invEl=document.getElementById(`fx-${invPair.invId}`);
+    if(invEl){ invEl.className='fx-rate loading'; invEl.textContent='获取中…'; }
+  }
+}
+
+function setFxError(id){
+  const el=document.getElementById(`fx-${id}`);
+  if(el){ el.className='fx-rate err'; el.textContent='获取失败'; }
+  const invPair = FX_PAIRS.find(p=>p.id===id);
+  if(invPair){
+    const invEl=document.getElementById(`fx-${invPair.invId}`);
+    if(invEl){ invEl.className='fx-rate err'; invEl.textContent='获取失败'; }
+  }
+}
+
+async function fetchFxRates(){
+  // set loading state
+  FX_PAIRS.forEach(p=>setFxLoading(p.id));
+
+  await Promise.allSettled(FX_PAIRS.map(async p=>{
+    try{
+      const u1=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(p.ticker)}?interval=1d&range=5d`;
+      const u2=`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(p.ticker)}?interval=1d&range=5d`;
+      let rate, prevClose;
+      let fetched = false;
+      for(let pi=0;pi<PROXIES.length && !fetched;pi++){
+        for(const yu of [u1,u2]){
+          try{
+            const {url,unwrap}=PROXIES[pi](yu);
+            const res=await fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(12000)});
+            if(!res.ok) continue;
+            let text=await res.text();
+            if(unwrap){ const o=JSON.parse(text); text=o.contents; }
+            const json=JSON.parse(text);
+            const meta=json?.chart?.result?.[0]?.meta;
+            rate      = meta?.regularMarketPrice ?? meta?.previousClose;
+            prevClose = meta?.previousClose ?? meta?.chartPreviousClose;
+            if(typeof rate==='number'){ fetched=true; break; }
+          }catch(e){ /* try next */ }
+        }
+        if(fetched) break;
+      }
+      if(!fetched) throw new Error('all proxies failed');
+      setFxCard(p.id, rate, prevClose);
+
+      // also update the AUD rate input if this is AUDUSD
+      if(p.id==='audusd'){
+        document.getElementById('audrate').value = rate.toFixed(4);
+        saveRate(); renderTable();
+      }
+    }catch(e){
+      setFxError(p.id);
+    }
+  }));
+}
+
+// ── AUD rate ─────────────────────────────────────────────────────
 function getRate(){ return parseFloat(document.getElementById('audrate').value)||0.635; }
-function saveRate(){ localStorage.setItem('aud_rate', document.getElementById('audrate').value); }
+function saveRate(){ localStorage.setItem('aud_rate2', document.getElementById('audrate').value); }
 function loadRate(){
-  const v = localStorage.getItem('aud_rate') || '0.6350';
+  const v = localStorage.getItem('aud_rate2')||'0.6350';
   document.getElementById('audrate').value = v;
 }
 
 async function fetchAudRate(){
+  const btn = document.querySelector('.afbtn');
+  btn.textContent='获取中…';
   try{
-    const btn = document.querySelector('.aud-fetch');
-    btn.textContent = '获取中…';
-    // Use Yahoo Finance AUDUSD=X
-    const price = await fetchViaProxies('AUDUSD=X');
-    if(price){
-      document.getElementById('audrate').value = price.toFixed(4);
-      saveRate(); renderTable();
-      showToast(`✅ 汇率已更新：AUD/USD = ${price.toFixed(4)}`);
-    }
-    btn.textContent = '⟳ 自动获取汇率';
-  }catch(e){
-    showToast('❌ 汇率获取失败，请手动输入');
-    document.querySelector('.aud-fetch').textContent='⟳ 自动获取汇率';
-  }
+    const p = await fetchViaProxies('AUDUSD=X');
+    document.getElementById('audrate').value = p.toFixed(4);
+    saveRate(); renderTable();
+    showToast(`✅ 汇率已更新：AUD/USD = ${p.toFixed(4)}`);
+  }catch(e){ showToast('❌ 汇率获取失败，请手动输入'); }
+  btn.textContent='⟳ 自动获取汇率';
 }
 
-// ── Toast ────────────────────────────────────────────
-function showToast(msg,dur=2800){
+// ── Toast ─────────────────────────────────────────────────────────
+function showToast(msg,dur=3000){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-// ── Status ───────────────────────────────────────────
-function setStatus(state,txt){
-  document.getElementById('sdot').className='sdot '+(state||'');
+// ── Status ────────────────────────────────────────────────────────
+function setStatus(st,txt){
+  document.getElementById('sdot').className='sdot '+(st||'');
   document.getElementById('stxt').textContent=txt;
 }
 
-// ── AUD conversion ───────────────────────────────────
-function toAud(price, cur){ return cur==='AUD' ? price : price / getRate(); }
+// ── AUD conversion ────────────────────────────────────────────────
+function toAud(price,cur){ return cur==='AUD'?price:price/getRate(); }
 
-// ── Render ───────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────
+function fmt(n,d=2){ return n.toLocaleString('en-AU',{minimumFractionDigits:d,maximumFractionDigits:d}); }
+
 function renderTable(){
   const tbody = document.getElementById('tbody');
-  tbody.innerHTML = STOCKS.map(s=>{
-    const badge = s.ex==='ASX'
-      ? `<span class="badge asx">ASX</span>`
-      : `<span class="badge us">${s.ex}</span>`;
+  let totalCost=0, totalMkt=0, allPriced=true;
 
+  const rows = HOLDINGS.map(s=>{
+    const badge = `<span class="bdg asx">ASX</span>`;
     const buyAud = toAud(s.buy, s.cur);
-    const st = s.state; // undefined | 'loading' | 'error' | number
+    const cost   = buyAud * s.qty;
+    const st = s.state;
 
-    let rawTd, curAudTd, diffTd, pctTd;
+    let rawTd, curAudTd, mktTd, pnlTd, pctTd;
 
     if(st===undefined){
-      rawTd='<span class="neu">—</span>';
-      curAudTd='<span class="neu">—</span>';
-      diffTd='<span class="neu">—</span>';
-      pctTd='<span class="pbadge pn">—</span>';
+      allPriced=false;
+      rawTd=curAudTd=mktTd=pnlTd='<span class="neu">—</span>';
+      pctTd='<span class="pb pn">—</span>';
     } else if(st==='loading'){
-      rawTd='<span class="cp-loading">获取中…</span>';
-      curAudTd=diffTd='<span class="neu">—</span>';
-      pctTd='<span class="pbadge pn">…</span>';
+      allPriced=false;
+      rawTd='<span class="cp-load">获取中…</span>';
+      curAudTd=mktTd=pnlTd='<span class="neu">—</span>';
+      pctTd='<span class="pb pn">…</span>';
     } else if(st==='error'){
+      allPriced=false;
       rawTd='<span class="cp-err">获取失败</span>';
-      curAudTd=diffTd='<span class="neu">—</span>';
-      pctTd='<span class="pbadge pn">—</span>';
+      curAudTd=mktTd=pnlTd='<span class="neu">—</span>';
+      pctTd='<span class="pb pn">—</span>';
     } else {
-      const ca = toAud(st, s.cur);
-      const d  = ca - buyAud;
-      const p  = (d/buyAud)*100;
-      const sg = d>=0?'+':'';
-      const gc = d>=0?'gain':'loss';
-      const pc = d>=0?'pg':'pl';
-      const dec = s.cur==='USD' ? 2 : 4;
-      rawTd    = `<span class="${gc}">${st.toFixed(dec)}</span>`;
-      curAudTd = `<span class="${gc}">${ca.toFixed(2)}</span>`;
-      diffTd   = `<span class="${gc}">${sg}${d.toFixed(2)}</span>`;
-      pctTd    = `<span class="pbadge ${pc}">${sg}${p.toFixed(2)}%</span>`;
+      const ca  = toAud(st, s.cur);
+      const mkt = ca * s.qty;
+      const pnl = mkt - cost;
+      const pct = (pnl/cost)*100;
+      const sg  = v=>v>=0?'+':'';
+      const gc  = v=>v>=0?'gain':'loss';
+      const pc  = v=>v>=0?'pg':'pl';
+      const d0  = s.cur==='USD'?2:4;
+      rawTd    = `<span class="${gc(st-s.buy)}">${fmt(st,d0)}</span>`;
+      curAudTd = `<span class="${gc(ca-buyAud)}">${fmt(ca,4)}</span>`;
+      mktTd    = `<span class="${gc(pnl)}">$${fmt(mkt)}</span>`;
+      pnlTd    = `<span class="${gc(pnl)}">${sg(pnl)}$${fmt(Math.abs(pnl))}</span>`;
+      pctTd    = `<span class="pb ${pc(pct)}">${sg(pct)}${fmt(Math.abs(pct))}%</span>`;
+      totalCost += cost;
+      totalMkt  += mkt;
     }
 
-    const dec0 = s.cur==='USD'?2:4;
+    const d0 = s.cur==='USD'?2:4;
+
     return `<tr>
       <td class="L"><span class="ticker">${s.id}</span>${badge}</td>
-      <td class="nm">${s.name}</td>
-      <td style="text-align:center;font-size:11px;color:var(--muted)">${s.cur}</td>
-      <td><span class="neu">${s.buy.toFixed(dec0)}</span></td>
+      <td class="nm">${s.name}<span class="dtag">买入：${s.buyDate}</span></td>
+      <td>${s.qty}</td>
+      <td><span class="neu">${fmt(s.buy,d0)}</span></td>
       <td>${rawTd}</td>
-      <td><span class="neu">${buyAud.toFixed(2)}</span></td>
+      <td><span class="neu">${fmt(buyAud,4)}</span></td>
       <td>${curAudTd}</td>
-      <td>${diffTd}</td>
+      <td><span class="neu">$${fmt(cost)}</span></td>
+      <td>${mktTd}</td>
+      <td>${pnlTd}</td>
       <td>${pctTd}</td>
     </tr>`;
   }).join('');
 
-  updateKPI();
+  // Total row
+  let totalRow='';
+  if(totalCost>0){
+    const totalPnl = totalMkt-totalCost;
+    const totalPct = (totalPnl/totalCost)*100;
+    const sg = v=>v>=0?'+':'';
+    const gc = v=>v>=0?'gain':'loss';
+    const pc = v=>v>=0?'pg':'pl';
+    totalRow = `<tr class="total-row">
+      <td class="L" colspan="2" style="color:var(--tx)">合计</td>
+      <td></td><td></td><td></td><td></td><td></td>
+      <td><span style="color:var(--tx)">$${fmt(totalCost)}</span></td>
+      <td><span class="${gc(totalPnl)}">$${fmt(totalMkt)}</span></td>
+      <td><span class="${gc(totalPnl)}">${sg(totalPnl)}$${fmt(Math.abs(totalPnl))}</span></td>
+      <td><span class="pb ${pc(totalPct)}">${sg(totalPct)}${fmt(Math.abs(totalPct))}%</span></td>
+    </tr>`;
+
+    // Update KPI
+    document.getElementById('kmktval').textContent = `A$${fmt(totalMkt)}`;
+    document.getElementById('kmktval').className = 'kv';
+    document.getElementById('ktotalpnl').textContent = `${sg(totalPnl)}A$${fmt(Math.abs(totalPnl))}`;
+    document.getElementById('ktotalpnl').className = `kv ${gc(totalPnl)}`;
+  } else {
+    document.getElementById('kmktval').textContent = '—';
+    document.getElementById('ktotalpnl').textContent = '—';
+  }
+
+  tbody.innerHTML = rows + totalRow;
+  updateKPIBestWorst();
 }
 
-function updateKPI(){
-  const priced = STOCKS.filter(s=>typeof s.state==='number');
+function updateKPIBestWorst(){
+  const priced = HOLDINGS.filter(s=>typeof s.state==='number');
   if(!priced.length){
-    ['kbest','kworst','kavg'].forEach(id=>document.getElementById(id).textContent='—');
-    document.getElementById('kavg').className='kpi-v';
+    ['kbest','kworst'].forEach(id=>document.getElementById(id).textContent='—');
     return;
   }
   const data = priced.map(s=>{
@@ -333,113 +593,100 @@ function updateKPI(){
   });
   const best  = data.reduce((a,b)=>a.p>b.p?a:b);
   const worst = data.reduce((a,b)=>a.p<b.p?a:b);
-  const avg   = data.reduce((s,x)=>s+x.p,0)/data.length;
-  const fmt   = v=>(v>=0?'+':'')+v.toFixed(1)+'%';
-  document.getElementById('kbest').textContent  = `${best.id}  ${fmt(best.p)}`;
-  document.getElementById('kworst').textContent = `${worst.id}  ${fmt(worst.p)}`;
-  document.getElementById('kavg').textContent   = (avg>=0?'+':'')+avg.toFixed(2)+'%';
-  document.getElementById('kavg').className     = 'kpi-v '+(avg>=0?'gain':'loss');
+  const f = v=>(v>=0?'+':'')+v.toFixed(2)+'%';
+  document.getElementById('kbest').textContent  = `${best.id}  ${f(best.p)}`;
+  document.getElementById('kworst').textContent = `${worst.id}  ${f(worst.p)}`;
 }
 
-// ── Multi-proxy fetch ─────────────────────────────────
-const PROXY_FNS = [
-  // corsproxy.io — wraps response directly (no envelope)
-  u => ({ url:`https://corsproxy.io/?${encodeURIComponent(u)}`, unwrap: false }),
-  // allorigins — wraps in {contents: "..."}
-  u => ({ url:`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, unwrap: true }),
-  // codetabs — direct
-  u => ({ url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, unwrap: false }),
+// ── Multi-proxy fetch ─────────────────────────────────────────────
+const PROXIES=[
+  u=>({url:`https://corsproxy.io/?${encodeURIComponent(u)}`,unwrap:false}),
+  u=>({url:`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,unwrap:true}),
+  u=>({url:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,unwrap:false}),
 ];
 
-async function tryProxy(yahooUrl, idx){
-  if(idx >= PROXY_FNS.length) throw new Error('all proxies exhausted');
-  const {url, unwrap} = PROXY_FNS[idx](yahooUrl);
-  const res = await fetch(url, {
-    cache:'no-cache',
-    signal: AbortSignal.timeout(12000),
-  });
-  if(!res.ok) throw new Error(`HTTP ${res.status} from proxy ${idx}`);
-  let text = await res.text();
-  if(unwrap){
-    // allorigins format: {status:{...}, contents:"JSON string"}
-    const outer = JSON.parse(text);
-    text = outer.contents;
-  }
-  const json = JSON.parse(text);
-  const meta = json?.chart?.result?.[0]?.meta;
-  const price = meta?.regularMarketPrice ?? meta?.previousClose;
-  if(typeof price !== 'number') throw new Error('no price field');
+async function tryProxy(yUrl,pi){
+  if(pi>=PROXIES.length) throw new Error('all proxies failed');
+  const {url,unwrap}=PROXIES[pi](yUrl);
+  const res=await fetch(url,{cache:'no-cache',signal:AbortSignal.timeout(12000)});
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  let text=await res.text();
+  if(unwrap){ const o=JSON.parse(text); text=o.contents; }
+  const json=JSON.parse(text);
+  const meta=json?.chart?.result?.[0]?.meta;
+  const price=meta?.regularMarketPrice??meta?.previousClose;
+  if(typeof price!=='number') throw new Error('no price');
   return price;
 }
 
 async function fetchViaProxies(ticker){
-  const yUrl1 = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  const yUrl2 = `https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  const errors = [];
-
-  for(let pi=0; pi<PROXY_FNS.length; pi++){
-    for(const yUrl of [yUrl1, yUrl2]){
-      try{
-        return await tryProxy(yUrl, pi);
-      }catch(e){
-        errors.push(`proxy${pi}+${yUrl.includes('query1')?'q1':'q2'}: ${e.message}`);
-      }
+  const u1=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  const u2=`https://query2.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  const errs=[];
+  for(let pi=0;pi<PROXIES.length;pi++){
+    for(const yu of [u1,u2]){
+      try{ return await tryProxy(yu,pi); }
+      catch(e){ errs.push(`p${pi}/${yu.includes('query1')?'q1':'q2'}: ${e.message}`); }
     }
   }
-  throw new Error(errors.join(' | '));
+  throw new Error(errs.slice(0,3).join(' | '));
 }
 
+// ── Fetch all ─────────────────────────────────────────────────────
 async function fetchAll(){
   const btn=document.getElementById('rbtn');
   const ic=document.getElementById('bicon');
   btn.disabled=true; ic.className='spin';
-  setStatus('loading','正在获取价格…');
+  setStatus('loading','正在获取行情及汇率…');
   document.getElementById('epanel').classList.remove('show');
 
-  STOCKS.forEach(s=>s.state='loading');
+  HOLDINGS.forEach(s=>s.state='loading');
   renderTable();
 
   let ok=0,fail=0;
   const errs=[];
 
-  await Promise.allSettled(STOCKS.map(async s=>{
-    try{
-      s.state = await fetchViaProxies(s.tk);
-      ok++;
-    }catch(e){
-      s.state='error'; fail++;
-      errs.push(`• <b>${s.id}</b> (${s.tk}): ${e.message}`);
-    }
-    renderTable();
-  }));
+  // fetch FX rates + stock prices in parallel
+  await Promise.all([
+    fetchFxRates(),
+    Promise.allSettled(HOLDINGS.map(async s=>{
+      try{
+        s.state=await fetchViaProxies(s.tk);
+        ok++;
+      }catch(e){
+        s.state='error'; fail++;
+        errs.push(`• <b>${s.id}</b> (${s.tk}): ${e.message}`);
+      }
+      renderTable();
+    }))
+  ]);
 
-  const now = new Date().toLocaleString('zh-CN',{
+  const now=new Date().toLocaleString('zh-CN',{
     month:'2-digit',day:'2-digit',
     hour:'2-digit',minute:'2-digit',second:'2-digit'
   });
-  document.getElementById('last-upd').textContent=`最后更新：${now}`;
+  document.getElementById('last-upd').textContent=`更新：${now}`;
 
   if(fail===0){
     setStatus('ok',`全部 ${ok} 只成功`);
-    showToast(`✅ 价格更新成功（${ok} 只）`);
+    showToast(`✅ 行情更新成功（${ok} 只）`);
   } else {
     setStatus('err',`${ok} 只成功 / ${fail} 只失败`);
-    showToast(`⚠️ ${fail} 只获取失败，请看下方诊断`,4500);
-    document.getElementById('edetail').innerHTML =
-      `<b>失败股票（${errs.length} 只）：</b><br>`+errs.join('<br>')
-      +`<br><br><b>🔧 解决方法（按顺序尝试）：</b><br>`
-      +`① 关闭浏览器广告拦截插件（uBlock Origin / AdGuard / 1Blocker），然后刷新重试<br>`
-      +`② 确保网络能访问 <a href="https://finance.yahoo.com" target="_blank" style="color:var(--accent)">finance.yahoo.com</a><br>`
-      +`③ 若使用 VPN，尝试切换节点（选择美国/香港节点）<br>`
-      +`④ 等待 2~3 分钟后重试（Yahoo Finance 有请求频率限制）<br>`
-      +`⑤ 在浏览器新标签页打开：<code style="color:var(--amber)">https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/NVDA</code>，若页面返回 JSON 则代理正常`;
+    showToast(`⚠️ ${fail} 只获取失败`,4000);
+    document.getElementById('edetail').innerHTML=
+      `<b>失败（${errs.length} 只）：</b><br>`+errs.join('<br>')
+      +`<br><br><b>🔧 解决方法：</b><br>`
+      +`① 关闭广告拦截插件（uBlock/AdGuard）后重试<br>`
+      +`② 确认能访问 <a href="https://finance.yahoo.com" target="_blank" style="color:var(--ac)">finance.yahoo.com</a><br>`
+      +`③ 切换网络节点后重试<br>`
+      +`④ 稍等2~3分钟重试（Yahoo 有频率限制）`;
     document.getElementById('epanel').classList.add('show');
   }
 
   btn.disabled=false; ic.className=''; ic.textContent='⟳';
 }
 
-// ── Init ─────────────────────────────────────────────
+// ── Init ──────────────────────────────────────────────────────────
 loadRate();
 renderTable();
 </script>
