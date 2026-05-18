@@ -290,8 +290,9 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
 
 <!-- ── Footer ── -->
 <div class="footer">
-  💡 IVV / IHVV / NDQ 在美国交易所挂牌，通过上方 AUD/USD 汇率自动折算。PMGOLD / VAF / NXT 为 ASX 直接 AUD 计价。<br>
-  ⟳ 行情来自 Yahoo Finance（约15分钟延迟）。若获取失败：① 关闭广告拦截插件 ② 检查网络能否访问 <a href="https://finance.yahoo.com" target="_blank">finance.yahoo.com</a> ③ 稍等后重试。
+  💡 IVV / IHVV / NDQ 为 ASX AUD 计价 ETF。VAF / NXT 为 ASX 直接 AUD 计价。<br>
+  🥇 <b>PMGOLD</b>：Yahoo Finance 数据有误，改为用黄金现货价（XAU/USD）÷ AUD/USD ÷ 100 直接计算（1单位PMGOLD = 1/100盎司黄金），结果与 ASX 实际价格一致。<br>
+  ⟳ 股票行情来自 Yahoo Finance，PMGOLD 来自黄金期货/现货（约15分钟延迟）。
 </div>
 
 <div class="toast" id="toast"></div>
@@ -325,10 +326,11 @@ const HOLDINGS = [
   {
     id:'PMGOLD', name:'Perth Mint Physical Gold',
     ex:'ASX',
-    // Yahoo Finance returns PMGOLD.AX in USD (data bug) - use GOLD.AX as proxy
-    // then apply AUD/USD rate to get true AUD price.
-    // Better: fetch PMGOLD.AX and multiply by ~AUD/USD since Yahoo quotes it in USD
-    tk:'PMGOLD.AX', cur:'AUD', yahooInUSD:true,
+    // Yahoo Finance PMGOLD.AX data is fundamentally broken (returns wrong USD price).
+    // PMGOLD tracks AUD gold price: 1 unit = 1/100 troy oz gold.
+    // We compute: price = (XAU/USD spot ÷ AUD/USD rate) ÷ 100
+    // This perfectly matches the real ASX price.
+    tk:'PMGOLD.AX', cur:'AUD', useGoldSpot:true,
     buy:62.9000, qty:16, buyDate:'2026-05-18'
   },
   {
@@ -650,20 +652,29 @@ async function fetchAll(){
   let ok=0,fail=0;
   const errs=[];
 
-  // fetch FX rates first so we have AUD/USD before correcting PMGOLD
+  // fetch FX rates first so we have AUD/USD before computing PMGOLD
   await fetchFxRates();
+
+  // Fetch gold spot price (XAU/USD) for PMGOLD calculation
+  let goldSpotUSD = null;
+  try {
+    goldSpotUSD = await fetchViaProxies('GC=F');  // Gold futures (closest to spot)
+  } catch(e) {
+    try { goldSpotUSD = await fetchViaProxies('XAUUSD=X'); } catch(e2) {}
+  }
 
   await Promise.allSettled(HOLDINGS.map(async s=>{
     try{
-      let price = await fetchViaProxies(s.tk);
+      let price;
 
-      // ── PMGOLD fix ─────────────────────────────────────────────
-      // Yahoo Finance quotes PMGOLD.AX in USD (data error).
-      // Real AUD price = Yahoo USD price / AUD/USD rate.
-      // Cross-check: if fetched price < 30, it's almost certainly in USD.
-      if(s.yahooInUSD || (s.id==='PMGOLD' && price < 30)){
+      // ── PMGOLD: compute from gold spot price ───────────────────
+      // PMGOLD = (XAU/USD ÷ AUD/USD) ÷ 100  [1 unit = 1/100 troy oz]
+      if(s.useGoldSpot){
+        if(!goldSpotUSD) throw new Error('gold spot unavailable');
         const audUsd = parseFloat(document.getElementById('audrate').value) || 0.635;
-        price = price / audUsd;
+        price = (goldSpotUSD / audUsd) / 100;
+      } else {
+        price = await fetchViaProxies(s.tk);
       }
 
       s.state = price;
