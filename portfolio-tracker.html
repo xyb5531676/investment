@@ -268,8 +268,6 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
         <th class="L">代码</th>
         <th class="L">名称</th>
         <th>持仓<br><span style="font-size:8px;opacity:.5">数量</span></th>
-        <th>买入价<br><span style="font-size:8px;opacity:.5">原币</span></th>
-        <th>当前价<br><span style="font-size:8px;opacity:.5">原币</span></th>
         <th>买入价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
         <th>当前价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
         <th>持仓成本<br><span style="font-size:8px;opacity:.5">AUD</span></th>
@@ -309,9 +307,10 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
 
 const HOLDINGS = [
   {
+    // Merged: 65股@$68.88 (05-18) + 14股@$68.80 (05-20) = 79股 均价$68.8658
     id:'IVV', name:'iShares S&P 500 ETF',
     ex:'ASX', tk:'IVV.AX', cur:'AUD',
-    buy:68.8800, qty:65, buyDate:'2026-05-18'
+    buy:68.8658, qty:79, buyDate:'2026-05-18'
   },
   {
     id:'IHVV', name:'iShares S&P 500 AUD Hedged ETF',
@@ -326,10 +325,8 @@ const HOLDINGS = [
   {
     id:'PMGOLD', name:'Perth Mint Physical Gold',
     ex:'ASX',
-    // Yahoo Finance PMGOLD.AX data is fundamentally broken (returns wrong USD price).
-    // PMGOLD tracks AUD gold price: 1 unit = 1/100 troy oz gold.
-    // We compute: price = (XAU/USD spot ÷ AUD/USD rate) ÷ 100
-    // This perfectly matches the real ASX price.
+    // Yahoo Finance PMGOLD.AX data is broken — compute from gold spot:
+    // price = (XAU/USD / AUD/USD) / 100   [1 unit = 1/100 troy oz]
     tk:'PMGOLD.AX', cur:'AUD', useGoldSpot:true,
     buy:62.9000, qty:16, buyDate:'2026-05-18'
   },
@@ -342,6 +339,22 @@ const HOLDINGS = [
     id:'NXT', name:'NEXTDC Limited',
     ex:'ASX', tk:'NXT.AX', cur:'AUD',
     buy:12.5260, qty:770, buyDate:'2022-01-05'
+  },
+  {
+    id:'VAS', name:'Vanguard Australian Shares Index ETF',
+    ex:'ASX', tk:'VAS.AX', cur:'AUD',
+    buy:105.7000, qty:28, buyDate:'2026-05-20'
+  },
+  {
+    id:'SEMI', name:'Global X Semiconductor ETF',
+    ex:'ASX', tk:'SEMI.AX', cur:'AUD',
+    buy:35.5400, qty:70, buyDate:'2026-05-20'
+  },
+  {
+    // 买入价待定 — 等NVDA财报后确认入场价格再更新
+    id:'NVDA', name:'NVIDIA Corporation',
+    ex:'NASDAQ', tk:'NVDA', cur:'USD',
+    buy:null, qty:0, buyDate:'2026-05-20', pending:true
   },
 ];
 
@@ -500,10 +513,30 @@ function renderTable(){
   let totalCost=0, totalMkt=0, allPriced=true;
 
   const rows = HOLDINGS.map(s=>{
-    const badge = `<span class="bdg asx">ASX</span>`;
-    const buyAud = toAud(s.buy, s.cur);
+    const badge = s.ex==='ASX'
+      ? `<span class="bdg asx">ASX</span>`
+      : `<span class="bdg us">${s.ex}</span>`;
+    const buyAud = s.pending ? 0 : toAud(s.buy, s.cur);
     const cost   = buyAud * s.qty;
     const st = s.state;
+
+    // ── Pending (buy price TBD) ──────────────────────────────────
+    if(s.pending){
+      const curPrice = typeof st==='number'
+        ? `<span class="warn" style="font-size:12px">${fmt(st, s.cur==='USD'?2:4)} ${s.cur}</span>`
+        : st==='loading'
+          ? `<span class="cp-load">获取中…</span>`
+          : `<span class="neu">—</span>`;
+      return `<tr style="opacity:.75;border-left:3px solid #BA7517">
+        <td class="L"><span class="ticker">${s.id}</span>${badge}</td>
+        <td class="nm">${s.name}<span class="dtag" style="color:#BA7517">⏳ 待买入 — 等财报后确认价格</span></td>
+        <td><span class="neu">—</span></td>
+        <td><span class="neu">待定</span></td>
+        <td>${curPrice}</td>
+        <td colspan="4"><span style="font-size:11px;color:#9C5700">买入价确认后请在代码中更新 buy 和 qty</span></td>
+        <td><span class="pb" style="background:#FFF8E7;color:#9C5700">⏳ 待买入</span></td>
+      </tr>`;
+    }
 
     let rawTd, curAudTd, mktTd, pnlTd, pctTd;
 
@@ -669,7 +702,14 @@ async function fetchAll(){
 
       // ── PMGOLD: compute from gold spot price ───────────────────
       // PMGOLD = (XAU/USD ÷ AUD/USD) ÷ 100  [1 unit = 1/100 troy oz]
-      if(s.useGoldSpot){
+      if(s.pending && !s.useGoldSpot){
+        // Pending stock: still fetch current price for display, but don't include in totals
+        price = await fetchViaProxies(s.tk);
+        s.state = price;
+        ok++;
+        renderTable();
+        return;
+      } else if(s.useGoldSpot){
         if(!goldSpotUSD) throw new Error('gold spot unavailable');
         const audUsd = parseFloat(document.getElementById('audrate').value) || 0.635;
         price = (goldSpotUSD / audUsd) / 100;
