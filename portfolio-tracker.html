@@ -307,10 +307,10 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
 
 const HOLDINGS = [
   {
-    // Merged: 65股@$68.88 (05-18) + 14股@$68.80 (05-20) = 79股 均价$68.8658
+    // 65@68.88(05-18) + 14@68.80(05-20) + 14@69.65(05-20) + 14@69.90(05-25) = 107股 均价$69.1038
     id:'IVV', name:'iShares S&P 500 ETF',
     ex:'ASX', tk:'IVV.AX', cur:'AUD',
-    buy:68.8658, qty:79, buyDate:'2026-05-18'
+    buy:69.1038, qty:107, buyDate:'2026-05-18'
   },
   {
     id:'IHVV', name:'iShares S&P 500 AUD Hedged ETF',
@@ -341,14 +341,16 @@ const HOLDINGS = [
     buy:12.5260, qty:770, buyDate:'2022-01-05'
   },
   {
+    // 28@105.70(05-20) + 28@105.70(05-20) = 56股 均价$105.7000
     id:'VAS', name:'Vanguard Australian Shares Index ETF',
     ex:'ASX', tk:'VAS.AX', cur:'AUD',
-    buy:105.7000, qty:28, buyDate:'2026-05-20'
+    buy:105.7000, qty:56, buyDate:'2026-05-20'
   },
   {
+    // 70@35.54(05-20) + 70@37.11(05-25) = 140股 均价$36.3250
     id:'SEMI', name:'Global X Semiconductor ETF',
     ex:'ASX', tk:'SEMI.AX', cur:'AUD',
-    buy:35.5400, qty:70, buyDate:'2026-05-20'
+    buy:36.3250, qty:140, buyDate:'2026-05-20'
   },
   {
     // 买入价待定 — 等NVDA财报后确认入场价格再更新
