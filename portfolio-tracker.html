@@ -347,16 +347,22 @@ const HOLDINGS = [
     buy:105.7000, qty:56, buyDate:'2026-05-20'
   },
   {
-    // 70@35.54(05-20) + 70@37.11(05-25) = 140股 均价$36.3250
+    // 70@35.54(05-20) + 70@37.11(05-25) + 150@40.95(05-27) = 290股 均价$38.7172
     id:'SEMI', name:'Global X Semiconductor ETF',
     ex:'ASX', tk:'SEMI.AX', cur:'AUD',
-    buy:36.3250, qty:140, buyDate:'2026-05-20'
+    buy:38.7172, qty:290, buyDate:'2026-05-20'
   },
   {
     // 买入价待定 — 等NVDA财报后确认入场价格再更新
     id:'NVDA', name:'NVIDIA Corporation',
     ex:'NASDAQ', tk:'NVDA', cur:'USD',
     buy:null, qty:0, buyDate:'2026-05-20', pending:true
+  },
+  {
+    // 监控中 — 买入价待定，等回调$820-840区间入场
+    id:'MU', name:'Micron Technology',
+    ex:'NASDAQ', tk:'MU', cur:'USD',
+    buy:null, qty:0, buyDate:'2026-05-27', pending:true
   },
 ];
 
