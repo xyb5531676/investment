@@ -268,6 +268,8 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
         <th class="L">代码</th>
         <th class="L">名称</th>
         <th>持仓<br><span style="font-size:8px;opacity:.5">数量</span></th>
+        <th>买入价<br><span style="font-size:8px;opacity:.5">原币</span></th>
+        <th>当前价<br><span style="font-size:8px;opacity:.5">原币</span></th>
         <th>买入价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
         <th>当前价<br><span style="font-size:8px;opacity:.5">AUD</span></th>
         <th>持仓成本<br><span style="font-size:8px;opacity:.5">AUD</span></th>
@@ -352,18 +354,7 @@ const HOLDINGS = [
     ex:'ASX', tk:'SEMI.AX', cur:'AUD',
     buy:38.7172, qty:290, buyDate:'2026-05-20'
   },
-  {
-    // 买入价待定 — 等NVDA财报后确认入场价格再更新
-    id:'NVDA', name:'NVIDIA Corporation',
-    ex:'NASDAQ', tk:'NVDA', cur:'USD',
-    buy:null, qty:0, buyDate:'2026-05-20', pending:true
-  },
-  {
-    // 监控中 — 买入价待定，等回调$820-840区间入场
-    id:'MU', name:'Micron Technology',
-    ex:'NASDAQ', tk:'MU', cur:'USD',
-    buy:null, qty:0, buyDate:'2026-05-27', pending:true
-  },
+
   {
     id:'AVGO', name:'Broadcom Inc.',
     ex:'NASDAQ', tk:'AVGO', cur:'USD',
