@@ -240,7 +240,7 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
 <div class="krow">
   <div class="kpi">
     <div class="kl">持仓总数</div>
-    <div class="kv" style="color:var(--ac)" id="ktotal">11</div>
+    <div class="kv" style="color:var(--ac)" id="ktotal">6</div>
   </div>
   <div class="kpi">
     <div class="kl">总持仓市值</div>
@@ -330,7 +330,7 @@ const HOLDINGS = [
     // Yahoo Finance PMGOLD.AX data is broken — compute from gold spot:
     // price = (XAU/USD / AUD/USD) / 100   [1 unit = 1/100 troy oz]
     tk:'PMGOLD.AX', cur:'AUD', useGoldSpot:true,
-    buy:63.5250, qty:16, buyDate:'2026-05-18'
+    buy:62.7280, qty:46, buyDate:'2026-05-18'
   },
   {
     id:'VAF', name:'Vanguard Australian Fixed Interest ETF',
@@ -364,11 +364,6 @@ const HOLDINGS = [
     id:'DELL', name:'Dell Technologies',
     ex:'NYSE', tk:'DELL', cur:'USD',
     buy:454.00, qty:5, buyDate:'2026-05-30'
-  },
-  {
-    id:'MU', name:'Micron Technology',
-    ex:'NASDAQ', tk:'MU', cur:'USD',
-    buy:1080.00, qty:2, buyDate:'2026-06-03'
   },
 ];
 
