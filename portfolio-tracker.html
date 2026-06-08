@@ -309,10 +309,10 @@ tr.total-row td{border-top:1px solid var(--bd2);font-weight:600;
 
 const HOLDINGS = [
   {
-    // 65@68.88(05-18) + 14@68.80(05-20) + 14@69.65(05-20) + 14@69.90(05-25) = 107股 均价$69.1038
+    // CommSec实际持仓：114股 均价$69.794（含手续费摊入）
     id:'IVV', name:'iShares S&P 500 ETF',
     ex:'ASX', tk:'IVV.AX', cur:'AUD',
-    buy:69.3910, qty:79, buyDate:'2026-05-18'
+    buy:69.7940, qty:114, buyDate:'2026-05-18'
   },
   {
     id:'IHVV', name:'iShares S&P 500 AUD Hedged ETF',
@@ -358,12 +358,17 @@ const HOLDINGS = [
   {
     id:'AVGO', name:'Broadcom Inc.',
     ex:'NASDAQ', tk:'AVGO', cur:'USD',
-    buy:459.55, qty:4, buyDate:'2026-05-28'
+    buy:459.5500, qty:4, buyDate:'2026-05-28'
   },
   {
     id:'DELL', name:'Dell Technologies',
     ex:'NYSE', tk:'DELL', cur:'USD',
-    buy:454.00, qty:5, buyDate:'2026-05-30'
+    buy:454.0000, qty:5, buyDate:'2026-05-30'
+  },
+  {
+    id:'MU', name:'Micron Technology',
+    ex:'NASDAQ', tk:'MU', cur:'USD',
+    buy:1080.0000, qty:2, buyDate:'2026-06-08'
   },
 ];
 
